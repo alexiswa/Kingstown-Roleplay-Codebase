@@ -8,7 +8,12 @@ local MoneyService = {}
 ---- Any side
 
 function MoneyService.GetMoney(player: Player)
-	local moneyVal = player:FindFirstChild(MONEY_CONTAINER_NAME) :: NumberValue
+	local leaderstats = player:FindFirstChild("Leaderstats")
+	
+	if not leaderstats then
+		error("Cannot get money; leaderstats does not exist!")
+	end
+	local moneyVal = leaderstats:FindFirstChild(MONEY_CONTAINER_NAME) :: NumberValue
 
 	if not moneyVal then
 		error("Cannot get money; money value does not exist!")
@@ -39,14 +44,19 @@ function MoneyService.AddMoney(player: Player, amount: number)
 	if not RunService:IsServer() then
 		error("Attempting to run AddMoney() outside of server-side")
 	end
-	
-	local money = player:FindFirstChild(MONEY_CONTAINER_NAME) :: NumberValue
 
-	if not money then
-		money = MoneyService.InitializePlayerData(player)
+	local leaderstats = player:FindFirstChild("Leaderstats")
+	
+	if not leaderstats then
+		error("Cannot get money; leaderstats does not exist!")
+	end
+	local moneyVal = leaderstats:FindFirstChild(MONEY_CONTAINER_NAME) :: NumberValue
+
+	if not moneyVal then
+		error("Cannot get money; money value does not exist!")
 	end
 
-	money.Value += amount
+	moneyVal.Value += amount
 	
 end
 
@@ -56,16 +66,19 @@ function MoneyService.InitializePlayerData(player: Player): NumberValue
 		error("Cannot initialize player data outside of server")
 	end
 
-	local alreadyExists: Instance? = player:FindFirstChild(MONEY_CONTAINER_NAME)
+	local alreadyExists: Instance? = player:FindFirstChild("leaderstats")
 
 	if alreadyExists then
 		print("Player data already initialized")
 		return alreadyExists :: NumberValue
 	end
 
+	local ls = Instance.new("Folder")
 	local money: NumberValue = Instance.new("NumberValue")
 	money.Value = 500
-	money.Parent = player
+	money.Parent = ls
+	ls.Name = "leaderstats"
+	ls.Parent = player
 	return money
 end
 
