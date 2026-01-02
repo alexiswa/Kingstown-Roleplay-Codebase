@@ -33,3 +33,5 @@ end
 function ShopItem.OnPurchase(self: ShopItem, plr: Player?)
     print(`Bought {self.Name} for {self.Cost}!`)
 end
+
+return ShopItem
