@@ -27,7 +27,7 @@ Players.PlayerAdded:Connect(function(player: Player)
             lastPos = currentPos
             currentPos = charPos
 
-            -- divide by 3.57 to convert to m/s
+            -- divide by 3.57 to convert to meters
             local magnitude = (currentPos - lastPos).Magnitude / 3.57
 
             oneMinuteVelocity += magnitude / dt
