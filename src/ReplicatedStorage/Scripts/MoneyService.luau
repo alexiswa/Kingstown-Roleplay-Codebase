@@ -11,7 +11,15 @@ local MoneyService = {}
 -- Returns the players money
 -- NOTE: Although this can be run on the client-side, it should only be run on the server
 -- for important tasks such as shop purchasing. Use with caution.
-function MoneyService.GetMoney(player: Player)
+function MoneyService.GetMoney(player: Player, silenceClientSideWarning: boolean)
+	silenceClientSideWarning = silenceClientSideWarning or false
+
+	if RunService:IsClient() and not silenceClientSideWarning then
+		warn("Warning! Getting the players money on the client side is unsafe" ..
+			"for transaction use and should only be used for UI and effects!" ..
+			"Set the second parameter to `true` to silence.")
+	end
+
 	local leaderstats = player:FindFirstChild("leaderstats")
 	
 	if not leaderstats then
