@@ -67,6 +67,7 @@ local function InitializePlayerData(player: Player): NumberValue
 	local ls = Instance.new("Folder")
 	local money: NumberValue = Instance.new("NumberValue")
 	money.Value = 500
+	money.Name = MONEY_CONTAINER_NAME
 	money.Parent = ls
 	ls.Name = "leaderstats"
 	ls.Parent = player
