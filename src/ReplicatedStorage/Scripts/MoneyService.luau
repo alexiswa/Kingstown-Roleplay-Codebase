@@ -116,11 +116,12 @@ function MoneyService.init()
 
     	        oneMinuteVelocity += magnitude / dt
 			
-    	        if cycleTime >= 60 then
+    	        if cycleTime >= 15 then
     	            local average = oneMinuteVelocity / timeCounter
     	            timeCounter = 0
     	            oneMinuteVelocity = 0
     	            cycleTime = 0
+					print(average)
     	            return MoneySpeedCurve(average)
     	        end
     	        return 0
@@ -129,8 +130,9 @@ function MoneyService.init()
     	    heartbeatConnection = RunService.Heartbeat:Connect(function(dt: number)  
     	        local r = heartbeatCore(char:GetPivot().Position, dt)
     	        -- money wont be added if its under 5 dollars.
-    	        if r > 5 then 
-    	            MoneyService.AddMoney(player, r)
+				if r > 5 then
+    	            MoneyService.AddMoney(player, math.round(r))
+					print(r)
     	        end
     	    end)
     	end)
