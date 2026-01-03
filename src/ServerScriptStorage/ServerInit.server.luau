@@ -1,4 +1,4 @@
 --!strict
-local MoneyService = require('../ReplicatedStorage/MoneyService')
+local MoneyService = require('../ReplicatedStorage/Scripts/MoneyService')
 
 MoneyService.init()
