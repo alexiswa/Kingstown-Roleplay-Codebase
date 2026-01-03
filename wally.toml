@@ -1,0 +1,8 @@
+[package]
+name = "finys/kingstown-roleplay"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+
+[dependencies]
+DocumentService = "anthony0br/documentservice@LATEST_VERSION"
