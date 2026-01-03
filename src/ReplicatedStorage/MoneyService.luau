@@ -8,6 +8,9 @@ local MoneyService = {}
 
 ---- Any side
 
+-- Returns the players money
+-- NOTE: Although this can be run on the client-side, it should only be run on the server
+-- for important tasks such as shop purchasing. Use with caution.
 function MoneyService.GetMoney(player: Player)
 	local leaderstats = player:FindFirstChild("Leaderstats")
 	
@@ -23,21 +26,7 @@ function MoneyService.GetMoney(player: Player)
 	return moneyVal.Value
 end
 
-@native
-function MoneyService.MoneySpeedCurve(speed: number): number
-	if speed >= 15 and speed <= 30 then
-		return 650
-	elseif speed < 15 then
-		local denom = 1 + math.exp(-speed + 8.5)
-		return 750 / denom
-	else
-		local denom = 1 + math.exp(-1.5 * speed + 52)
-		return -(650 / denom) + 750
-	end
-end
-
 ---- Client side
-
 
 ---- Server side
 
@@ -61,8 +50,9 @@ function MoneyService.AddMoney(player: Player, amount: number)
 	
 end
 
+---- On load
 --TODO: data store
-function MoneyService.InitializePlayerData(player: Player): NumberValue
+local function InitializePlayerData(player: Player): NumberValue
 	if not RunService:IsServer() then
 		error("Cannot initialize player data outside of server")
 	end
@@ -83,9 +73,22 @@ function MoneyService.InitializePlayerData(player: Player): NumberValue
 	return money
 end
 
-function MoneyService.StartMoneyLoop()
+@native
+local function MoneySpeedCurve(speed: number): number
+	if speed >= 15 and speed <= 30 then
+		return 650
+	elseif speed < 15 then
+		local denom = 1 + math.exp(-speed + 8.5)
+		return 750 / denom
+	else
+		local denom = 1 + math.exp(-1.5 * speed + 52)
+		return -(650 / denom) + 750
+	end
+end
+
+function MoneyService.init()
 	Players.PlayerAdded:Connect(function(player: Player)
-    	MoneyService.InitializePlayerData(player)
+    	InitializePlayerData(player)
 		
     	local heartbeatConnection: RBXScriptConnection
 
@@ -118,7 +121,7 @@ function MoneyService.StartMoneyLoop()
     	            timeCounter = 0
     	            oneMinuteVelocity = 0
     	            cycleTime = 0
-    	            return MoneyService.MoneySpeedCurve(average)
+    	            return MoneySpeedCurve(average)
     	        end
     	        return 0
     	    end
