@@ -12,7 +12,7 @@ local MoneyService = {}
 -- NOTE: Although this can be run on the client-side, it should only be run on the server
 -- for important tasks such as shop purchasing. Use with caution.
 function MoneyService.GetMoney(player: Player)
-	local leaderstats = player:FindFirstChild("Leaderstats")
+	local leaderstats = player:FindFirstChild("leaderstats")
 	
 	if not leaderstats then
 		error("Cannot get money; leaderstats does not exist!")
@@ -35,7 +35,7 @@ function MoneyService.AddMoney(player: Player, amount: number)
 		error("Attempting to run AddMoney() outside of server-side")
 	end
 
-	local leaderstats = player:FindFirstChild("Leaderstats")
+	local leaderstats = player:FindFirstChild("leaderstats")
 	
 	if not leaderstats then
 		error("Cannot get money; leaderstats does not exist!")
@@ -117,7 +117,6 @@ function MoneyService.init()
 			
     	        if cycleTime >= 60 then
     	            local average = oneMinuteVelocity / timeCounter
-    	            print(average)
     	            timeCounter = 0
     	            oneMinuteVelocity = 0
     	            cycleTime = 0
