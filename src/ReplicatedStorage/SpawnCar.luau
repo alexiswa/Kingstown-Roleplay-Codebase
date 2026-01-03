@@ -1,5 +1,0 @@
-local SpawnCar = {}
-
-
-
-return SpawnCar
