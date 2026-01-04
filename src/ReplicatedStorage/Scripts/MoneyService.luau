@@ -1,4 +1,5 @@
 --!strict
+--TODO: extract max money to a single variable
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
@@ -85,7 +86,7 @@ end
 @native
 local function MoneySpeedCurve(speed: number): number
 	if speed >= 15 and speed <= 30 then
-		return 650
+		return 750
 	elseif speed < 15 then
 		local denom = 1 + math.exp(-speed + 8.5)
 		return 750 / denom
