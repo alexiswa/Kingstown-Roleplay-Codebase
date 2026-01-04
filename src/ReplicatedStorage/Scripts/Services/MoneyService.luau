@@ -3,6 +3,8 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
+local PlayerSpeedService = require('./PlayerSpeedService')
+
 local MONEY_CONTAINER_NAME = "PlayerMoneyAttribute"
 
 local MoneyService = {}
@@ -100,56 +102,15 @@ function MoneyService.init()
 	Players.PlayerAdded:Connect(function(player: Player)
     	InitializePlayerData(player)
 		
-    	local heartbeatConnection: RBXScriptConnection
+		local characterRemoving = false
 
-    	player.CharacterAdded:Connect(function(char: Model)  
-    	    local lastPos = char:GetPivot().Position
-    	    local currentPos = char:GetPivot().Position
-    	    local oneMinuteVelocity = 0
-    	    local timeCounter = 0
-    	    local cycleTime = 0
-
-    	    -- defining this function in-scope to use above declared variables,
-    	    -- and running it in native as it runs very frequently and does not make
-    	    -- roblox API calls. Returns a number given from MoneySpeedCurve() every 60
-    	    -- seconds, otherwise returns 0
-    	    @native
-    	    local function heartbeatCore(charPos: Vector3, dt: number): number
-    	        cycleTime += dt
-    	        timeCounter += 1
-    	        lastPos = currentPos
-    	        currentPos = charPos
-
-    	        -- divide by 3.57 to convert to meters
-    	        local magnitude = (currentPos - lastPos).Magnitude / 3.57
-
-    	        oneMinuteVelocity += magnitude / dt
-			
-    	        if cycleTime >= 15 then
-    	            local average = oneMinuteVelocity / timeCounter
-    	            timeCounter = 0
-    	            oneMinuteVelocity = 0
-    	            cycleTime = 0
-					print(average)
-    	            return MoneySpeedCurve(average)
-    	        end
-    	        return 0
-    	    end
-
-    	    heartbeatConnection = RunService.Heartbeat:Connect(function(dt: number)  
-    	        local r = heartbeatCore(char:GetPivot().Position, dt)
-    	        -- money wont be added if its under 5 dollars.
-				if r > 5 then
-    	            MoneyService.AddMoney(player, math.round(r))
-					print(r)
-    	        end
-    	    end)
-    	end)
-
-    	-- prevent heartbeat connections continuing for old characters
-    	player.CharacterRemoving:Connect(function()  
-    	    heartbeatConnection:Disconnect()
-    	end)
+		player.CharacterAdded:Connect(function(char: Model)  
+			while not characterRemoving do
+				local result = PlayerSpeedService.GetAveragePlayerSpeedOverTime(player, 60 * 1000)
+				print(math.round(MoneySpeedCurve(result)))
+				MoneyService.AddMoney(player, math.round(MoneySpeedCurve(result)))
+			end
+		end)
 	end)
 end
 
