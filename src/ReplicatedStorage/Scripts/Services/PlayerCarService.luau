@@ -12,6 +12,7 @@ function PlayerCarService.init()
     
     Players.PlayerAdded:Connect(function(plr: Player)
         local carTracker = Instance.new("ObjectValue")
+        carTracker.Name = "CarTracker"
         carTracker.Parent = plr
     end)
 
@@ -28,7 +29,7 @@ function PlayerCarService.init()
 end
 
 function PlayerCarService.GetPlayerActiveCar(plr: Player)
-    return plr.carTracker.Value
+    return plr.CarTracker.Value
 end
 
 ---@param plr: The player to get the speed of
