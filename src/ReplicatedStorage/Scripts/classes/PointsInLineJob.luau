@@ -3,7 +3,7 @@
 -- Intended to be reusable.
 
 ---- requires
-local PlayerSpeedService = require('../Services/PlayerSpeedService')
+local PlayerCarService = require('../Services/PlayerCarService')
 local MoneyService = require('../Services/MoneyService')
 ---- end requires
 
@@ -20,14 +20,14 @@ type WaypointInfo = {
 type PointsInLineJobData = {
     read Player: Player, -- The player who started the job, or the "owner"
     RewardOnCompletion: number, -- How much money is rewarded after completing every waypoint
-    StopOnFinalWaypoint: boolean, -- Does the player need to stop on the final waypoint?
+    StopOnFinalWaypoint: boolean, -- Does the player need to stop on the final waypoint? TODO
 	StopOnMidpoints: boolean, -- Does the player need to stop on all points that are not the first or last
-	ShowWaypoints: boolean, -- Do each of the waypoints show up?
+	ShowWaypoints: boolean, -- Do each of the waypoints show up? TODO
 
-	PermittedVehicles: (string | {string}), -- What vehicle(s) does the job need to be completed? use "any" to allow any vehicle
+	PermittedVehicles: (string | {string}), -- What vehicle(s) does the job need to be completed? use "any" to allow any vehicle TODO
 
     read initEvent: BindableEvent,
-    read OnStart: BindableEvent, -- Function that runs when a player starts the job
+    read OnStart: BindableEvent, -- Function that runs when a player starts the job TODO
     read OnWaypoint: BindableEvent, -- Function that runs when a player passes through a waypoint
     read OnFinish: BindableEvent, -- Function that runs after finishing the job
 
@@ -107,7 +107,7 @@ function PointsInLineJob.new(points: {Vector3}, player: Player): PointsInLineJob
                 partTouched = part
 
                 if self.StopOnMidpoints then
-                    while PlayerSpeedService.GetAveragePlayerSpeedOverTime(player, 250) > 1 do
+                    while PlayerCarService.GetAveragePlayerSpeedOverTime(player, 250) > 1 do
                         -- do nothing
                     end
                     -- stop it from being triggered by stopping after leaving the waypoint 

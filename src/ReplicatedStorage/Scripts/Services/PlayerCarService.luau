@@ -1,11 +1,23 @@
---!strict
+-- custom PlayerService
 local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerStorage = game:GetService("ServerStorage")
 
-local PlayerSpeedService = {}
+local SpawnCarEvent: RemoteEvent = ReplicatedStorage.Remotes.SpawnCar
+
+local PlayerCarService = {}
+
+function PlayerCarService.init()
+    SpawnCarEvent.OnServerEvent:Connect(function(plr: Player, car: string, ...)  
+        local newCar: Model = ServerStorage.Cars:FindFirstChild(car):Clone()
+        newCar:PivotTo(plr.Character:GetPivot())
+        newCar.Parent = workspace
+    end)
+end
 
 ---@param plr: The player to get the speed of
 ---@param tp: the time frame, in ms, to get the players speed over. Optional, defaults to 500
-function PlayerSpeedService.GetAveragePlayerSpeedOverTime(plr: Player, tp: number?)
+function PlayerCarService.GetAveragePlayerSpeedOverTime(plr: Player, tp: number?)
     local trackTime = tp or 500
     -- convert to seconds
     trackTime /= 1000
@@ -48,4 +60,4 @@ function PlayerSpeedService.GetAveragePlayerSpeedOverTime(plr: Player, tp: numbe
     return result
 end
 
-return PlayerSpeedService
+return PlayerCarService

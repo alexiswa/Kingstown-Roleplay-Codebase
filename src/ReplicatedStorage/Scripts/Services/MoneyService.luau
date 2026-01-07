@@ -3,7 +3,7 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
-local PlayerSpeedService = require('./PlayerSpeedService')
+local PlayerCarService = require('./PlayerCarService')
 
 local MONEY_CONTAINER_NAME = "PlayerMoneyAttribute"
 
@@ -106,7 +106,7 @@ function MoneyService.init()
 
 		player.CharacterAdded:Connect(function(char: Model)  
 			while not characterRemoving do
-				local result = PlayerSpeedService.GetAveragePlayerSpeedOverTime(player, 60 * 1000)
+				local result = PlayerCarService.GetAveragePlayerSpeedOverTime(player, 60 * 1000)
 				print(math.round(MoneySpeedCurve(result)))
 				MoneyService.AddMoney(player, math.round(MoneySpeedCurve(result)))
 			end
