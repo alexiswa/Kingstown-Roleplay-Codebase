@@ -4,6 +4,7 @@
 
 ---- requires
 local PlayerSpeedService = require('../Services/PlayerSpeedService')
+local MoneyService = require('../Services/MoneyService')
 ---- end requires
 
 ---- OOP setup ----
@@ -17,7 +18,7 @@ type WaypointInfo = {
 }
 
 type PointsInLineJobData = {
-    Player: Player, -- The player who started the job, or the "owner"
+    read Player: Player, -- The player who started the job, or the "owner"
     RewardOnCompletion: number, -- How much money is rewarded after completing every waypoint
     StopOnFinalWaypoint: boolean, -- Does the player need to stop on the final waypoint?
 	StopOnMidpoints: boolean, -- Does the player need to stop on all points that are not the first or last
@@ -25,9 +26,10 @@ type PointsInLineJobData = {
 
 	PermittedVehicles: (string | {string}), -- What vehicle(s) does the job need to be completed? use "any" to allow any vehicle
 
-    OnStart: BindableEvent, -- Function that runs when a player starts the job
-    OnWaypoint: BindableEvent, -- Function that runs when a player passes through a waypoint
-    OnFinish: BindableEvent, -- Function that runs after finishing the job
+    read initEvent: BindableEvent,
+    read OnStart: BindableEvent, -- Function that runs when a player starts the job
+    read OnWaypoint: BindableEvent, -- Function that runs when a player passes through a waypoint
+    read OnFinish: BindableEvent, -- Function that runs after finishing the job
 
     ----------
 
@@ -50,75 +52,99 @@ waypointVisiblePart.CanCollide = false
 waypointVisiblePart.Orientation = Vector3.new(0, 0, 90)
 
 function PointsInLineJob.new(points: {Vector3}, player: Player): PointsInLineJob
-    local self = {} :: PointsInLineJob
+    -- assign readonly properties
+    local self = {
+        Player = player,
+        initEvent = Instance.new("BindableEvent"),
+        OnStart = Instance.new("BindableEvent"),
+        OnWaypoint = Instance.new("BindableEvent"),
+        OnFinish = Instance.new("BindableEvent"),
+    } :: PointsInLineJob
 
-    self.Player = player
     self.RewardOnCompletion = 0
     self.StopOnFinalWaypoint = false
     self.StopOnMidpoints = false
     self.ShowWaypoints = false
     self.PermittedVehicles = "any"
 
-    self.OnStart = Instance.new("BindableEvent")
-    self.OnWaypoint = Instance.new("BindableEvent")
-    self.OnFinish = Instance.new("BindableEvent")
-
     self.BoundingBox = Vector3.new(15, 500, 15)
 
     self.Waypoints = {}
         
-    for i, point in points do
-        local pointInfo = {} :: WaypointInfo
-        pointInfo.WorldPosition = point
-        pointInfo.CollisionPart = waypointVisiblePart:Clone()
-        pointInfo.CollisionPart.Size = self.BoundingBox
-        pointInfo.CollisionPart.Position = point
-        pointInfo.CollisionPart.Parent = workspace
-        pointInfo.Index = i
-        pointInfo.Completed = false
+    task.spawn(function()
+       self.initEvent.Event:Wait()
 
-        local recentlyTouchedByPlayer = false
-        local partTouched: BasePart?
+        for i, point in points do
+            local pointInfo = {} :: WaypointInfo
+            pointInfo.WorldPosition = point
+            pointInfo.Index = i
+            pointInfo.Completed = false
 
-        pointInfo.CollisionPart.Touched:Connect(function(part: BasePart)  
-            -- TODO: Check if previous points have been completed before firing
-            if not player.Character then
-                player.CharacterAdded:Wait()
-            end
+            pointInfo.CollisionPart = waypointVisiblePart:Clone()
+            pointInfo.CollisionPart.Size = self.BoundingBox
+            pointInfo.CollisionPart.Position = point
+            pointInfo.CollisionPart.Parent = workspace
 
-            if part.Parent ~= player.Character or recentlyTouchedByPlayer or pointInfo.Completed  then
-                return
-            end
+            local recentlyTouchedByPlayer = false
+            local partTouched: BasePart?
 
-            recentlyTouchedByPlayer = true
-            partTouched = part
-
-            if self.StopOnMidpoints then
-                while PlayerSpeedService.GetAveragePlayerSpeedOverTime(player, 250) > 1 do
-                    -- do nothing
+            -- TODO: add vehicle check
+            pointInfo.CollisionPart.Touched:Connect(function(part: BasePart)  
+                if not player.Character then
+                   player.CharacterAdded:Wait()
                 end
-                -- stop it from being triggered by stopping after leaving the waypoint 
-                if not recentlyTouchedByPlayer then
+
+                if part.Parent ~= player.Character or recentlyTouchedByPlayer or pointInfo.Completed  then
                     return
                 end
-            end
-            print('Hit waypoint!')
-            self.OnWaypoint:Fire(pointInfo)
-            pointInfo.Completed = true 
-        end)
 
-        pointInfo.CollisionPart.TouchEnded:Connect(function(part: BasePart)
-            if part == partTouched and recentlyTouchedByPlayer then
-                recentlyTouchedByPlayer = false
-                partTouched = nil
-            end
-        end)
+                -- require previous waypoints to be completed, only if its not the first one.
+                if pointInfo.Index > 1 and not self.Waypoints[pointInfo.Index - 1].Completed then
+                    return
+                end
 
-        table.insert(self.Waypoints, pointInfo)
-    end
+                recentlyTouchedByPlayer = true
+                partTouched = part
+
+                if self.StopOnMidpoints then
+                    while PlayerSpeedService.GetAveragePlayerSpeedOverTime(player, 250) > 1 do
+                        -- do nothing
+                    end
+                    -- stop it from being triggered by stopping after leaving the waypoint 
+                    if not recentlyTouchedByPlayer then
+                        return
+                    end
+                end
+
+                print('Hit waypoint!')
+                self.OnWaypoint:Fire(pointInfo)
+                pointInfo.Completed = true 
+
+                if pointInfo.Index == #points then
+                    print("Finished!")
+                    MoneyService.AddMoney(player, self.RewardOnCompletion)
+                    self.OnFinish:Fire()
+                end
+            end)
+
+            pointInfo.CollisionPart.TouchEnded:Connect(function(part: BasePart)
+                if part == partTouched and recentlyTouchedByPlayer then
+                    recentlyTouchedByPlayer = false
+                    partTouched = nil
+                end
+            end)
+
+            table.insert(self.Waypoints, pointInfo)
+        end
+    end)
+
+    setmetatable(self, PointsInLineJob)
 
     return self
 end
 
+function PointsInLineJob.init(self: PointsInLineJob)
+    self.initEvent:Fire()
+end
 
 return PointsInLineJob
