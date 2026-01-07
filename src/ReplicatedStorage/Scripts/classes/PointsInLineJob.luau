@@ -24,7 +24,7 @@ type PointsInLineJobData = {
 	StopOnMidpoints: boolean, -- Does the player need to stop on all points that are not the first or last
 	ShowWaypoints: boolean, -- Do each of the waypoints show up? TODO
 
-	PermittedVehicles: (string | {string}), -- What vehicle(s) does the job need to be completed? use "any" to allow any vehicle TODO
+	PermittedVehicles: {string}, -- What vehicle(s) does the job need to be completed? use "any" to allow any vehicle
 
     read initEvent: BindableEvent,
     read OnStart: BindableEvent, -- Function that runs when a player starts the job TODO
@@ -65,7 +65,7 @@ function PointsInLineJob.new(points: {Vector3}, player: Player): PointsInLineJob
     self.StopOnFinalWaypoint = false
     self.StopOnMidpoints = false
     self.ShowWaypoints = false
-    self.PermittedVehicles = "any"
+    self.PermittedVehicles = {"any"}
 
     self.BoundingBox = Vector3.new(15, 500, 15)
 
@@ -95,6 +95,24 @@ function PointsInLineJob.new(points: {Vector3}, player: Player): PointsInLineJob
                 end
 
                 if part.Parent ~= player.Character or recentlyTouchedByPlayer or pointInfo.Completed  then
+                    return
+                end
+
+                local inAuthorizedVehicle = false
+                local activeCar = PlayerCarService.GetPlayerActiveCar(player)
+
+                if self.PermittedVehicles[1] == "any" then
+                    inAuthorizedVehicle = true
+                else
+                    for _, s in self.PermittedVehicles do
+                        if activeCar.Name == s then
+                            inAuthorizedVehicle = true
+                            break
+                        end
+                    end
+                end
+
+                if not inAuthorizedVehicle then
                     return
                 end
 
