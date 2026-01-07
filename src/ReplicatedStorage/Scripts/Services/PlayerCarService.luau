@@ -27,6 +27,10 @@ function PlayerCarService.init()
     end)
 end
 
+function PlayerCarService.GetPlayerActiveCar(plr: Player)
+    return plr.carTracker.Value
+end
+
 ---@param plr: The player to get the speed of
 ---@param tp: the time frame, in ms, to get the players speed over. Optional, defaults to 500
 function PlayerCarService.GetAveragePlayerSpeedOverTime(plr: Player, tp: number?)
