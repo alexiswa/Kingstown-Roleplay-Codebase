@@ -1,4 +1,5 @@
 -- custom PlayerService
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
@@ -8,10 +9,21 @@ local SpawnCarEvent: RemoteEvent = ReplicatedStorage.Remotes.SpawnCar
 local PlayerCarService = {}
 
 function PlayerCarService.init()
+    
+    Players.PlayerAdded:Connect(function(plr: Player)
+        local carTracker = Instance.new("ObjectValue")
+        carTracker.Parent = plr
+    end)
+
     SpawnCarEvent.OnServerEvent:Connect(function(plr: Player, car: string, ...)  
+        if plr.CarTracker.Value ~= nil then
+            plr.CarTracker.Value:Destroy()
+        end
+        
         local newCar: Model = ServerStorage.Cars:FindFirstChild(car):Clone()
         newCar:PivotTo(plr.Character:GetPivot())
         newCar.Parent = workspace
+        plr.CarTracker.Value = newCar
     end)
 end
 
