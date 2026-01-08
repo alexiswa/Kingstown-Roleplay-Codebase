@@ -16,6 +16,14 @@ function PlayerCarService.init()
         carTracker.Parent = plr
     end)
 
+    Players.PlayerRemoving:Connect(function(plr: Player, _: Enum.PlayerExitReason)
+        -- silent fail
+        if not plr.CarTracker then
+            return
+        end
+        plr.CarTracker.Value:Destroy()
+    end)
+
     SpawnCarEvent.OnServerEvent:Connect(function(plr: Player, car: string, ...)  
         if plr.CarTracker.Value ~= nil then
             plr.CarTracker.Value:Destroy()
