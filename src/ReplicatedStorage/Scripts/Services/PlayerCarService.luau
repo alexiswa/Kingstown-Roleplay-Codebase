@@ -18,7 +18,7 @@ function PlayerCarService.init()
 
     Players.PlayerRemoving:Connect(function(plr: Player, _: Enum.PlayerExitReason)
         -- silent fail
-        if not plr.CarTracker then
+        if not plr.CarTracker.Value then
             return
         end
         plr.CarTracker.Value:Destroy()
