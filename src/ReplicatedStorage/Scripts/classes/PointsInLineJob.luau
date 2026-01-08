@@ -39,6 +39,7 @@ type PointsInLineJobData = {
     Waypoints: {WaypointInfo},
 }
 
+
 PointsInLineJob.__index = PointsInLineJob
 export type PointsInLineJob = setmetatable<PointsInLineJobData, typeof(PointsInLineJob)>
 ---- end OOP setup ----
