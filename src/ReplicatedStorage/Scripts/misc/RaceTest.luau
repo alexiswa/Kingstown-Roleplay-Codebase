@@ -17,10 +17,13 @@ return function()
     local race = PointsInLineJob.new(points, plr)
     race.BoundingBox = Vector3.new(100, 500, 100)
     race.RewardOnCompletion = 1000
+    race.PermittedVehicles = {"A-Chassis 1.7.1"}
 
     race:init()
 
-    race.OnWaypoint.Event:Connect(function(...)  
-        print("Bingo!")
-    end)
+    while true do 
+        race.OnFinish.Event:Wait()
+
+        race:Reset()
+    end
 end

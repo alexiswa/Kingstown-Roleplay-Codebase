@@ -88,7 +88,6 @@ function PointsInLineJob.new(points: {Vector3}, player: Player): PointsInLineJob
             local recentlyTouchedByPlayer = false
             local partTouched: BasePart?
 
-            -- TODO: add vehicle check
             pointInfo.CollisionPart.Touched:Connect(function(part: BasePart)  
                 if not player.Character then
                    player.CharacterAdded:Wait()
@@ -139,6 +138,17 @@ function PointsInLineJob.new(points: {Vector3}, player: Player): PointsInLineJob
                 pointInfo.Completed = true 
 
                 if pointInfo.Index == #points then
+
+                    if self.StopOnFinalWaypoint then
+                        while PlayerCarService.GetAveragePlayerSpeedOverTime(player, 250) > 1 do
+                            -- do nothing
+                        end
+                        -- stop it from being triggered by stopping after leaving the waypoint 
+                        if not recentlyTouchedByPlayer then
+                            return
+                        end
+                    end
+
                     print("Finished!")
                     MoneyService.AddMoney(player, self.RewardOnCompletion)
                     self.OnFinish:Fire()
@@ -159,6 +169,12 @@ function PointsInLineJob.new(points: {Vector3}, player: Player): PointsInLineJob
     setmetatable(self, PointsInLineJob)
 
     return self
+end
+
+function PointsInLineJob.Reset(self: PointsInLineJob)
+    for _, point in self.Waypoints do
+        point.Completed = false
+    end
 end
 
 function PointsInLineJob.init(self: PointsInLineJob)
