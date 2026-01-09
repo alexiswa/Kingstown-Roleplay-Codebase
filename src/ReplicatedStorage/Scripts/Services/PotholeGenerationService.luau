@@ -60,11 +60,12 @@ function PotholeGenerationService.StartGeneration()
             local i = 0
             repeat
                 selectedRoad = roadList[math.random(1, #roadList)]
-                if i >= 256 then 
-                    break
-                end
                 i += 1
-            until PotholeIsDistantEnough(potholes, selectedRoad.Position)
+            until PotholeIsDistantEnough(potholes, selectedRoad.Position) or i >= 256
+
+            if i >= 256 then
+                return
+            end
 
             table.insert(potholes, selectedRoad)
 
