@@ -5,10 +5,11 @@ local PotholeGenerationService = {}
 
 local potholes: {BasePart} = {}
 
-local MAX_POTHOLES = 5
-local POTHOLE_GENERATION_COOLDOWN = 60
+local GENERATION_ENABLED = false
+local MAX_POTHOLES = 50
+local POTHOLE_GENERATION_COOLDOWN = 1
 local POTHOLE_GENERATION_COOLDOWN_VARIATION = 0
-local MINIMUM_POTHOLE_DISTANCE = 1000
+local MINIMUM_POTHOLE_DISTANCE = 5
 
 local function filterRoadList(roadList: {Instance})
     for i, d in roadList do
@@ -42,6 +43,9 @@ function PotholeIsDistantEnough(existing: {BasePart}, newPothole: Vector3)
 end
 
 function PotholeGenerationService.StartGeneration()
+    if not GENERATION_ENABLED then
+        return
+    end
     local generateTick = 0
     local variation = math.random(0, POTHOLE_GENERATION_COOLDOWN_VARIATION)
     local roadList = filterRoadList(CollectionService:GetTagged("Pavement"))
@@ -70,12 +74,24 @@ function PotholeGenerationService.StartGeneration()
             table.insert(potholes, selectedRoad)
 
             local pothole = Instance.new("Part")
-            pothole.Position = GetRandomPointInsidePart(selectedRoad)
-            pothole.Orientation = Vector3.new(0, 0, 90)
-            pothole.Size = Vector3.new(15, 5, 15)
+            local pos = GetRandomPointInsidePart(selectedRoad)
+            pothole.Position = Vector3.new(pos.X, selectedRoad.Position.Y + 0.5, pos.Z)
+            pothole.Orientation = selectedRoad.Orientation + Vector3.new(0, 0, 90)
+            pothole.Size = Vector3.new(selectedRoad.Size.Y / 2 + 0.75, 5, 5)
             pothole.Shape = Enum.PartType.Cylinder
+            local s, result = pcall(function(...)  
+                return selectedRoad:SubtractAsync({pothole})
+            end)
+            
+            if s == false then
+                warn("err")
+                return
+            end
+
+            result.Parent = selectedRoad.Parent
             pothole.Anchored = true
             pothole.Parent = workspace
+            selectedRoad.Transparency = 1
         end
     end)
 end
