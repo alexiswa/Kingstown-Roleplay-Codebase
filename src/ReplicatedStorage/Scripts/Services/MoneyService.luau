@@ -107,8 +107,14 @@ function MoneyService.init()
 		player.CharacterAdded:Connect(function(char: Model)  
 			while not characterRemoving do
 				local result = PlayerCarService.GetAveragePlayerSpeedOverTime(player, 60 * 1000)
-				print(math.round(MoneySpeedCurve(result)))
-				MoneyService.AddMoney(player, math.round(MoneySpeedCurve(result)))
+				local moneyToAdd = math.round(MoneySpeedCurve(result))
+
+				if moneyToAdd ~= moneyToAdd then
+					warn("Warning: Got a NaN Value. Printing debug information:")
+					print(`\tDebugInfo:\n\tplayer speed avg over 60 seconds: {result}\n\tmoney to add: {moneyToAdd}`)
+				end
+
+				MoneyService.AddMoney(player, moneyToAdd)
 			end
 		end)
 	end)

@@ -11,7 +11,6 @@ MoneyService.init()
 UiInit()
 PlayerCarService.init()
 PrepWorkspace()
-
 PotholeGenerationService.StartGeneration()
 
 -- asynchronous stuff here
