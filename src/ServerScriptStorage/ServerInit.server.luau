@@ -5,13 +5,14 @@ local PotholeGenerationService = require('../ReplicatedStorage/Scripts/Services/
 local UiInit = require('../ReplicatedStorage/Scripts/misc/UiInit')
 local RaceTest = require('../ReplicatedStorage/Scripts/misc/RaceTest')
 local PrepWorkspace = require('../ReplicatedStorage/Scripts/misc/PrepWorkspace')
-
+local TrafficLightService = require('../ReplicatedStorage/Scripts/Services/TrafficLightService')
 
 MoneyService.init()
 UiInit()
 PlayerCarService.init()
 PrepWorkspace()
 PotholeGenerationService.StartGeneration()
+TrafficLightService.init()
 
 -- asynchronous stuff here
 task.spawn(function()

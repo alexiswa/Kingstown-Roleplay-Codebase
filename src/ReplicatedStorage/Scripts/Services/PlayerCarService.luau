@@ -25,10 +25,10 @@ function PlayerCarService.init()
     end)
 
     SpawnCarEvent.OnServerEvent:Connect(function(plr: Player, car: any, ...)  
-        if typeof(car) ~= string then
+        if typeof(car) ~= "string" then
             return
         end
-        
+
         if plr.CarTracker.Value ~= nil then
             plr.CarTracker.Value:Destroy()
         end
