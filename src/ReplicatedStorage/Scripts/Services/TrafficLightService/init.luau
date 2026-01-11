@@ -11,6 +11,10 @@ function setToRed(folder: Folder)
         end
 
         for _, group in direction:GetChildren() do
+            if not group:IsA("Folder") then
+                continue
+            end
+
             for _, light in group:GetChildren() do
                 for _, bulb in light.Lights:GetChildren() do
                     if not bulb:IsA("BasePart") then

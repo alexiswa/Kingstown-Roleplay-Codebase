@@ -35,6 +35,9 @@ end
 
 function setDirectionTo(direction: Folder, color: string)
     for _, i in direction:GetChildren() do
+        if not i:IsA("Folder") then
+            continue
+        end
         setGroupPhase(i, color)
     end
 end
@@ -77,12 +80,14 @@ return {
             task.wait(1)
             setGroupPhase(CF_11B.E.fwd, "Green")
             setGroupPhase(CF_11B.W.fwd, "Green")
+            setIndividualPhase(CF_11B.W["Eagle Flatback Pedestrian Signal"], "Walk")
 
             task.wait(5)
 
             setDirectionTo(CF_11B.E, "Yellow")
             setDirectionTo(CF_11B.W, "Yellow")
             task.wait(1)
+            setIndividualPhase(CF_11B.W["Eagle Flatback Pedestrian Signal"], "DontWalk")
             setDirectionTo(CF_11B.E, "Red")
             setDirectionTo(CF_11B.W, "Red")
             task.wait(1)
