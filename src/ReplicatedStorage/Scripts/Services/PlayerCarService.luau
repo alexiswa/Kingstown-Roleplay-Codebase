@@ -24,13 +24,17 @@ function PlayerCarService.init()
         plr.CarTracker.Value:Destroy()
     end)
 
-    SpawnCarEvent.OnServerEvent:Connect(function(plr: Player, car: string, ...)  
+    SpawnCarEvent.OnServerEvent:Connect(function(plr: Player, car: any, ...)  
+        if typeof(car) ~= string then
+            return
+        end
+        
         if plr.CarTracker.Value ~= nil then
             plr.CarTracker.Value:Destroy()
         end
         
         local newCar: Model = ServerStorage.Cars:FindFirstChild(car):Clone()
-        newCar:PivotTo(plr.Character:GetPivot())
+        newCar:PivotTo(plr.Character:GetPivot() + Vector3.new(0, 5, 0)) 
         newCar.Parent = workspace
         plr.CarTracker.Value = newCar
     end)
