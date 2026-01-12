@@ -81,6 +81,7 @@ return {
             setGroupPhase(CF_11B.E.fwd, "Green")
             setGroupPhase(CF_11B.W.fwd, "Green")
             setIndividualPhase(CF_11B.W["Eagle Flatback Pedestrian Signal"], "Walk")
+            setIndividualPhase(CF_11B.W["Eagle Flatback Pedestrian Signal 2"], "Walk")
 
             task.wait(5)
 
@@ -88,6 +89,7 @@ return {
             setDirectionTo(CF_11B.W, "Yellow")
             task.wait(1)
             setIndividualPhase(CF_11B.W["Eagle Flatback Pedestrian Signal"], "DontWalk")
+            setIndividualPhase(CF_11B.W["Eagle Flatback Pedestrian Signal 2"], "DontWalk")
             setDirectionTo(CF_11B.E, "Red")
             setDirectionTo(CF_11B.W, "Red")
             task.wait(1)
