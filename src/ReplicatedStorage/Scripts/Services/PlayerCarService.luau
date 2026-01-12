@@ -69,7 +69,16 @@ function PlayerCarService.GetAveragePlayerSpeedOverTime(plr: Player, tp: number?
         numCycle += 1
         elapsed += dt
 
-        distCounter += ((lastPos - currentPos).Magnitude / 3.57) / dt
+        -- avoid dividing by 0 and getting NaN values.
+        -- although this shouldn't happen, it does, which is a problem.
+        if dt > 0 then
+            distCounter += ((lastPos - currentPos).Magnitude / 3.57) / dt
+        end
+
+        if distCounter ~= distCounter then
+            print(`\ndebug info:\n\tlastpos: {lastPos}\n\tcurrentpos: {currentPos}\n\tmagnitude: {(lastPos - currentPos).Magnitude}\n\tdt: {dt}\n\trawresult: {((lastPos - currentPos).Magnitude) / dt}\n\tprocessedResult: {((lastPos - currentPos).Magnitude / 3.57) / dt}\n\tnumCycle: {numCycle}\n\t`)
+            error("distCounter is Not a Number")
+        end
 
         if elapsed >= trackTime then
             result = distCounter / numCycle

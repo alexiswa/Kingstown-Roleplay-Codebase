@@ -112,6 +112,7 @@ function MoneyService.init()
 				if moneyToAdd ~= moneyToAdd then
 					warn("Warning: Got a NaN Value. Printing debug information:")
 					print(`\tDebugInfo:\n\tplayer speed avg over 60 seconds: {result}\n\tmoney to add: {moneyToAdd}`)
+					moneyToAdd = 0
 				end
 
 				MoneyService.AddMoney(player, moneyToAdd)
