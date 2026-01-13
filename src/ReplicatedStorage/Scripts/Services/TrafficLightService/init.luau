@@ -1,8 +1,7 @@
 local TrafficLightService = {}
 
-local lights = require('./TrafficLightService/defs')
-
-type light = lights.light
+local lights = require('@self/defs')
+local _, _, setDirectionPhase = require('@self/_getPhaseFunctions')()
 
 function setToRed(folder: Folder)
     for _, direction in folder:GetChildren() do
@@ -10,35 +9,15 @@ function setToRed(folder: Folder)
             continue
         end
 
-        for _, group in direction:GetChildren() do
-            if not group:IsA("Folder") then
-                continue
-            end
-
-            for _, light in group:GetChildren() do
-                for _, bulb in light.Lights:GetChildren() do
-                    if not bulb:IsA("BasePart") then
-                        continue
-                    end
-
-                    if bulb.Name == "Red" then
-                        bulb.DynamicLight.Enabled = true
-                        bulb.Lamp.Enabled = true
-                    else
-                        bulb.DynamicLight.Enabled = false
-                        bulb.Lamp.Enabled = false
-                    end
-                end
-            end
-        end
+        task.spawn(setDirectionPhase, direction, "Red")
     end
 end
 
 function TrafficLightService.init()
-    for _, junction: light in lights do
+    for _, junction in lights do
         -- initialize junction to red
         setToRed(junction.location)
-        -- run phases
+        -- run each light in its own thread
         task.spawn(function()
             while true do
                 junction.runPhases()
