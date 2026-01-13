@@ -1,4 +1,3 @@
--- custom PlayerService
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -16,7 +15,7 @@ function PlayerCarService.init()
         carTracker.Parent = plr
     end)
 
-    Players.PlayerRemoving:Connect(function(plr: Player, _: Enum.PlayerExitReason)
+    Players.PlayerRemoving:Connect(function(plr: Player)
         -- silent fail
         if not plr.CarTracker.Value then
             return
@@ -24,7 +23,7 @@ function PlayerCarService.init()
         plr.CarTracker.Value:Destroy()
     end)
 
-    SpawnCarEvent.OnServerEvent:Connect(function(plr: Player, car: any, ...)  
+    SpawnCarEvent.OnServerEvent:Connect(function(plr: Player, car: any)  
         if typeof(car) ~= "string" then
             return
         end
@@ -94,7 +93,7 @@ function PlayerCarService.GetAveragePlayerSpeedOverTime(plr: Player, tp: number?
     end)
 
     resultReadyEvent.Event:Wait()
-    connection:Disconnect()
+	connection:Disconnect()
     return result
 end
 
