@@ -1,10 +1,10 @@
 --!strict
--- Class for making checkpoint-based jobs, such as races, mail delivery, bus services, and similar. 
+-- Class for making checkpoint-based jobs, such as races, mail delivery, bus services, and similar.
 -- Intended to be reusable.
 
 ---- requires
-local PlayerCarService = require('../Services/PlayerCarService')
 local MoneyService = require('../Services/MoneyService')
+local PlayerCarService = require('../Services/PlayerCarService')
 ---- end requires
 
 ---- OOP setup ----
@@ -34,7 +34,7 @@ type PointsInLineJobData = {
     ----------
 
     -- The area around each waypoint that the player needs to be in to be considered complete
-    BoundingBox: Vector3, 
+    BoundingBox: Vector3,
     -- The table that contains the info for each waypoint. Do not manually assign.
     Waypoints: {WaypointInfo},
 }
@@ -71,7 +71,7 @@ function PointsInLineJob.new(points: {Vector3}, player: Player): PointsInLineJob
     self.BoundingBox = Vector3.new(15, 500, 15)
 
     self.Waypoints = {}
-        
+
     task.spawn(function()
        self.initEvent.Event:Wait()
 
@@ -89,7 +89,7 @@ function PointsInLineJob.new(points: {Vector3}, player: Player): PointsInLineJob
             local recentlyTouchedByPlayer = false
             local partTouched: BasePart?
 
-            pointInfo.CollisionPart.Touched:Connect(function(part: BasePart)  
+            pointInfo.CollisionPart.Touched:Connect(function(part: BasePart)
                 if not player.Character then
                    player.CharacterAdded:Wait()
                 end
@@ -105,7 +105,7 @@ function PointsInLineJob.new(points: {Vector3}, player: Player): PointsInLineJob
                     inAuthorizedVehicle = true
                 else
                     for _, s in self.PermittedVehicles do
-                        if activeCar.Name == s then
+                        if activeCar and activeCar.Name == s then
                             inAuthorizedVehicle = true
                             break
                         end
@@ -128,7 +128,7 @@ function PointsInLineJob.new(points: {Vector3}, player: Player): PointsInLineJob
                     while PlayerCarService.GetAveragePlayerSpeedOverTime(player, 250) > 1 do
                         -- do nothing
                     end
-                    -- stop it from being triggered by stopping after leaving the waypoint 
+                    -- stop it from being triggered by stopping after leaving the waypoint
                     if not recentlyTouchedByPlayer then
                         return
                     end
@@ -136,7 +136,7 @@ function PointsInLineJob.new(points: {Vector3}, player: Player): PointsInLineJob
 
                 print('Hit waypoint!')
                 self.OnWaypoint:Fire(pointInfo)
-                pointInfo.Completed = true 
+                pointInfo.Completed = true
 
                 if pointInfo.Index == #points then
 
@@ -144,7 +144,7 @@ function PointsInLineJob.new(points: {Vector3}, player: Player): PointsInLineJob
                         while PlayerCarService.GetAveragePlayerSpeedOverTime(player, 250) > 1 do
                             -- do nothing
                         end
-                        -- stop it from being triggered by stopping after leaving the waypoint 
+                        -- stop it from being triggered by stopping after leaving the waypoint
                         if not recentlyTouchedByPlayer then
                             return
                         end

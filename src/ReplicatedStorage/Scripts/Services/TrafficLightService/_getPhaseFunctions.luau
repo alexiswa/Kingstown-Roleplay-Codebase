@@ -8,7 +8,7 @@ function SetIndividualPhase(light: Model, color: string, flashing: boolean?, fla
         if not bulb:IsA("BasePart") then
             continue
         end
-        
+
         if bulb.Name == color then
             if flashing then
                 local cancelEventVal = Instance.new("ObjectValue")
@@ -28,8 +28,8 @@ function SetIndividualPhase(light: Model, color: string, flashing: boolean?, fla
                     end
                 end)
                 coroutine.resume(thread);
-                
-                (cancelEventVal.Value  :: BindableEvent).Event:Connect(function(...) 
+
+                (cancelEventVal.Value  :: BindableEvent).Event:Connect(function(...)
                     coroutine.close(thread)
                 end)
             else
@@ -47,6 +47,9 @@ function SetGroupPhase(lightGroup: Folder, color: string, flashing: boolean?, fl
     flashing = flashing or false
 
     for _, light in lightGroup:GetChildren() do
+        if not light:IsA("Model") then
+            continue
+        end
         SetIndividualPhase(light, color, flashing, flashingTime)
     end
 end

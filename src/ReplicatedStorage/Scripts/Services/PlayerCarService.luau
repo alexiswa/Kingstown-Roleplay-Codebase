@@ -1,14 +1,15 @@
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ServerStorage = game:GetService("ServerStorage")
+--!strict
+local Players = game:GetService('Players')
+local ReplicatedStorage = game:GetService('ReplicatedStorage')
+local RunService = game:GetService('RunService')
+local ServerStorage = game:GetService('ServerStorage')
 
 local SpawnCarEvent: RemoteEvent = ReplicatedStorage.Remotes.SpawnCar
 
 local PlayerCarService = {}
 
 function PlayerCarService.init()
-    
+
     Players.PlayerAdded:Connect(function(plr: Player)
         local carTracker = Instance.new("ObjectValue")
         carTracker.Name = "CarTracker"
@@ -16,31 +17,53 @@ function PlayerCarService.init()
     end)
 
     Players.PlayerRemoving:Connect(function(plr: Player)
+        local CarTracker = plr:FindFirstChildWhichIsA("ObjectValue")
         -- silent fail
-        if not plr.CarTracker.Value then
-            return
+        if  CarTracker and CarTracker.Value ~= nil then
+            (CarTracker.Value :: Instance):Destroy()
         end
-        plr.CarTracker.Value:Destroy()
     end)
 
-    SpawnCarEvent.OnServerEvent:Connect(function(plr: Player, car: any)  
+    SpawnCarEvent.OnServerEvent:Connect(function(plr: Player, car: any)
         if typeof(car) ~= "string" then
             return
         end
 
-        if plr.CarTracker.Value ~= nil then
-            plr.CarTracker.Value:Destroy()
+        local CarTracker = plr:FindFirstChildWhichIsA("ObjectValue")
+        if not CarTracker then
+            print("Car Tracker not found!")
+            return
         end
-        
-        local newCar: Model = ServerStorage.Cars:FindFirstChild(car):Clone()
-        newCar:PivotTo(plr.Character:GetPivot() + Vector3.new(0, 5, 0)) 
+        if CarTracker.Value ~= nil then
+            CarTracker.Value:Destroy()
+        end
+
+        local carModel = ServerStorage.Cars:FindFirstChild(car)
+
+        if carModel == nil or not carModel:IsA("Model") then
+            return
+        end
+
+        local newCar: Model = carModel:Clone()
+        local char = plr.Character
+        if not plr.Character then
+           char = plr.CharacterAdded:Wait()
+        end
+
+        newCar:PivotTo((char :: Model):GetPivot() + Vector3.new(0, 5, 0))
         newCar.Parent = workspace
-        plr.CarTracker.Value = newCar
+        CarTracker.Value = newCar
     end)
 end
 
 function PlayerCarService.GetPlayerActiveCar(plr: Player)
-    return plr.CarTracker.Value
+    local carval = plr:FindFirstAncestorWhichIsA("ObjectValue")
+    if carval then
+        return carval.Value
+    else
+        print("Carval not found")
+        return nil
+    end
 end
 
 ---@param plr: The player to get the speed of

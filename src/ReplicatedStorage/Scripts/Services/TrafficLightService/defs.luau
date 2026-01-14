@@ -1,3 +1,4 @@
+--!strict
 local setIndividualPhase, setGroupPhase, setDirectionPhase = require('./_getPhaseFunctions')()
 
 local junctions = workspace.TrafficLights
@@ -50,5 +51,5 @@ return {
             setDirectionPhase(CF_11B.W, "Red")
             task.wait(3)
         end
-    }
+    },
 }

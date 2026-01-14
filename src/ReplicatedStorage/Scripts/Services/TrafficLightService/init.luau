@@ -1,3 +1,4 @@
+--!strict
 local TrafficLightService = {}
 
 local lights = require('@self/defs')
@@ -9,7 +10,7 @@ function setToRed(folder: Folder)
             continue
         end
 
-        task.spawn(setDirectionPhase, direction, "Red")
+        task.spawn(setDirectionPhase, direction, "Red", false, 0)
     end
 end
 

@@ -24,7 +24,7 @@ function MoneyService.GetMoney(player: Player, silenceClientSideWarning: boolean
 	end
 
 	local leaderstats = player:FindFirstChild("leaderstats")
-	
+
 	if not leaderstats then
 		error("Cannot get money; leaderstats does not exist!")
 	end
@@ -47,7 +47,7 @@ function MoneyService.AddMoney(player: Player, amount: number)
 	end
 
 	local leaderstats = player:FindFirstChild("leaderstats")
-	
+
 	if not leaderstats then
 		error("Cannot get money; leaderstats does not exist!")
 	end
@@ -58,7 +58,7 @@ function MoneyService.AddMoney(player: Player, amount: number)
 	end
 
 	moneyVal.Value += amount
-	
+
 end
 
 ---- On load
@@ -101,10 +101,10 @@ end
 function MoneyService.init()
 	Players.PlayerAdded:Connect(function(player: Player)
     	InitializePlayerData(player)
-		
+
 		local characterRemoving = false
 
-		player.CharacterAdded:Connect(function(char: Model)  
+		player.CharacterAdded:Connect(function(char: Model)
 			while not characterRemoving do
 				local result = PlayerCarService.GetAveragePlayerSpeedOverTime(player, 60 * 1000)
 				local moneyToAdd = math.round(MoneySpeedCurve(result))
