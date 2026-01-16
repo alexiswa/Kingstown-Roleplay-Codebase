@@ -5,9 +5,9 @@ local PotholeGenerationService = {}
 
 local potholes: {BasePart} = {}
 
-local GENERATION_ENABLED = true
+local GENERATION_ENABLED = false
 local MAX_POTHOLES = 50
-local POTHOLE_GENERATION_COOLDOWN = 1
+local POTHOLE_GENERATION_COOLDOWN = 100
 local POTHOLE_GENERATION_COOLDOWN_VARIATION = 0
 local MINIMUM_POTHOLE_DISTANCE = 5
 
@@ -84,7 +84,6 @@ function PotholeGenerationService.StartGeneration()
             pothole.Parent = workspace
 
             local touchedParts = pothole:GetTouchingParts()
-            print(touchedParts)
             table.insert(touchedParts, selectedRoad)
             for _, p in touchedParts do
                 local _, result = pcall(function(...)
